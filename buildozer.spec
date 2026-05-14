@@ -6,27 +6,20 @@ source.dir = .
 source.include_exts = py,png,jpg,tflite,kv
 version = 1.0
 
-# REQUIREMENTS: Am adăugat pachetele esențiale. 
-# Dacă tflite-runtime continuă să dea eroare, se poate folosi versiunea specifică de mai jos.
+# Am pus doar strictul necesar
 requirements = python3,kivy==2.3.0,numpy,pillow,tflite-runtime
 
-android.permissions = CAMERA, INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
-
+android.permissions = CAMERA, INTERNET
 orientation = portrait
 fullscreen = 1
 
-# SETĂRI SDK/NDK STABILE
-android.api = 34
+# Setări compatibile cu GitHub Actions
+android.api = 33
 android.minapi = 21
-android.ndk = 26b
-android.sdk = 34
+android.sdk = 33
+android.ndk = 25b
 android.accept_sdk_license = True
-android.sdk_build_tools_version = 34.0.0
 android.archs = arm64-v8a
-
-# Această opțiune previne compresia modelului .tflite, esențial pentru ca interpretorul să-l poată citi direct din APK
-android.no_inplace_gradle_build = True
-android.copy_libs = 1
 
 [buildozer]
 log_level = 2
