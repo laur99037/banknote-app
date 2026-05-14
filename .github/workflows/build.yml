@@ -47,15 +47,18 @@ jobs:
         touch $HOME/.android/repositories.cfg
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
         
-        # 2. INSTALARE MANUALĂ AIDL ȘI BUILD-TOOLS (Rezolvă eroarea ta)
-        # Instalăm platform-tools și build-tools versiunea 34 (cea mai stabilă pentru Buildozer)
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
+        # 2. Forțăm instalarea build-tools și aflăm unde este aidl
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platform-tools"
         
-        # 3. Configurăm calea pentru AIDL să fie vizibilă global
-        export PATH=$PATH:$ANDROID_HOME/build-tools/34.0.0
+        # 3. CREARE LINK SIMBOLIC (Soluția pentru eroarea ta)
+        # Buildozer caută aidl în propriul folder. Îi facem noi folderul înainte de pornire.
+        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/build-tools/34.0.0
+        # Facem legătura între aidl din sistem și ce caută Buildozer
+        ln -s $ANDROID_HOME/build-tools/34.0.0/aidl /home/runner/.buildozer/android/platform/android-sdk/build-tools/34.0.0/aidl
         
-        # 4. Rulăm buildozer
-        buildozer --log_level=2 android debug
+        # 4. Rulăm Buildozer
+        # Folosim 'yes |' din nou pentru că Buildozer e încăpățânat cu licențele interne
+        yes | buildozer --log_level=2 android debug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
