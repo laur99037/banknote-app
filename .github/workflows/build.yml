@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.10
+        python-version: '3.10'  # Puse ghilimele pentru a evita interpretarea ca 3.1
 
     - name: Install system dependencies
       run: |
@@ -25,7 +25,8 @@ jobs:
           git zip unzip openjdk-17-jdk \
           autoconf libtool pkg-config \
           zlib1g-dev libncurses5-dev libncursesw5-dev \
-          libtinfo6 cmake build-essential
+          libtinfo6 cmake build-essential \
+          shared-mime-info libssl-dev  # Adăugate pentru compatibilitate cu Ubuntu 24.04
 
     - name: Upgrade pip
       run: |
@@ -44,7 +45,8 @@ jobs:
 
     - name: Build APK
       run: |
-        buildozer -v android debug
+        # Folosim 'yes |' pentru a accepta automat licențele Android SDK pe care Buildozer le va descărca
+        yes | buildozer -v android debug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
