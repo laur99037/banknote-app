@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Checkout code
@@ -16,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'  # Puse ghilimele pentru a evita interpretarea ca 3.1
+        python-version: '3.10'
 
     - name: Install system dependencies
       run: |
@@ -26,7 +29,7 @@ jobs:
           autoconf libtool pkg-config \
           zlib1g-dev libncurses5-dev libncursesw5-dev \
           libtinfo6 cmake build-essential \
-          shared-mime-info libssl-dev  # Adăugate pentru compatibilitate cu Ubuntu 24.04
+          shared-mime-info libssl-dev
 
     - name: Upgrade pip
       run: |
@@ -43,9 +46,8 @@ jobs:
           buildozer init
         fi
 
-- name: Build APK
+    - name: Build APK
       run: |
-        # Am scos "yes |" și am adăugat --log_level=2 ca să vedem exact eroarea în consolă
         buildozer --log_level=2 android debug
 
     - name: Upload APK artifact
