@@ -46,8 +46,12 @@ jobs:
           buildozer init
         fi
 
-    - name: Build APK
+   - name: Build APK
       run: |
+        mkdir -p $HOME/.android
+        touch $HOME/.android/repositories.cfg
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+        
         buildozer --log_level=2 android debug
 
     - name: Upload APK artifact
