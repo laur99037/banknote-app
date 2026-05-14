@@ -42,23 +42,20 @@ jobs:
 
     - name: Build APK
       run: |
-        # 1. Acceptăm licențele
-        mkdir -p $HOME/.android
-        touch $HOME/.android/repositories.cfg
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+        # 1. Creăm structura de directoare pe care o așteaptă Buildozer
+        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
         
-        # 2. Forțăm instalarea build-tools și aflăm unde este aidl
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platform-tools"
+        # 2. Facem link-uri către sdkmanager-ul real din sistemul GitHub
+        # Aceasta rezolvă eroarea "sdkmanager path does not exist"
+        ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
         
-        # 3. CREARE LINK SIMBOLIC (Soluția pentru eroarea ta)
-        # Buildozer caută aidl în propriul folder. Îi facem noi folderul înainte de pornire.
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/build-tools/34.0.0
-        # Facem legătura între aidl din sistem și ce caută Buildozer
-        ln -s $ANDROID_HOME/build-tools/34.0.0/aidl /home/runner/.buildozer/android/platform/android-sdk/build-tools/34.0.0/aidl
+        # 3. Acceptăm licențele în mod preventiv
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
         
         # 4. Rulăm Buildozer
-        # Folosim 'yes |' din nou pentru că Buildozer e încăpățânat cu licențele interne
-        yes | buildozer --log_level=2 android debug
+        # Folosim log_level=2 pentru a vedea progresul. 
+        # NOTĂ: Nu mai folosim "yes |" aici pentru a evita "Broken pipe"
+        buildozer --log_level=2 android debug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
