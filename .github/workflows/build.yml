@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Checkout code
@@ -19,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: 3.10
 
     - name: Install system dependencies
       run: |
@@ -28,8 +25,7 @@ jobs:
           git zip unzip openjdk-17-jdk \
           autoconf libtool pkg-config \
           zlib1g-dev libncurses5-dev libncursesw5-dev \
-          libtinfo6 cmake build-essential \
-          shared-mime-info libssl-dev
+          libtinfo6 cmake build-essential
 
     - name: Upgrade pip
       run: |
@@ -40,25 +36,15 @@ jobs:
         pip install cython==0.29.36
         pip install buildozer
 
+    - name: Initialize Buildozer (if needed)
+      run: |
+        if [ ! -f buildozer.spec ]; then
+          buildozer init
+        fi
+
     - name: Build APK
       run: |
-        # 1. Acceptăm licențele SDK-ului preinstalat
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-        
-        # 2. Instalăm componentele necesare în SDK-ul sistemului
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platforms;android-34" "platform-tools"
-
-        # 3. PĂCĂLIM BUILDOZER (Forțăm căile către SDK-ul preinstalat din GitHub)
-        # Setăm variabile de mediu pe care Buildozer le citește PRIORITAR
-        export BUILDOZER_ANDROID_SDK=$ANDROID_HOME
-        export BUILDOZER_ANDROID_NDK=$ANDROID_NDK_LATEST_HOME
-        
-        # 4. Creăm folderul unde Buildozer caută AIDL și facem link către cel real
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/build-tools/34.0.0
-        ln -sf $ANDROID_HOME/build-tools/34.0.0/aidl /home/runner/.buildozer/android/platform/android-sdk/build-tools/34.0.0/aidl
-        
-        # 5. Rulăm Buildozer cu aceste variabile de mediu injectate
-        buildozer --log_level=2 android debug
+        buildozer -v android debug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
