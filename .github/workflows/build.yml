@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      # Forțează utilizarea Node.js 24 pentru a elimina avertismentele de depreciere
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -20,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10' # Puse între ghilimele pentru a asigura interpretarea corectă a versiunii
+        python-version: '3.10'
 
     - name: Install system dependencies
       run: |
@@ -41,21 +40,21 @@ jobs:
         pip install cython==0.29.36
         pip install buildozer
 
-    - name: Initialize Buildozer (if needed)
-      run: |
-        if [ ! -f buildozer.spec ]; then
-          buildozer init
-        fi
-
     - name: Build APK
       run: |
-        # Pas CRITIC: Acceptarea automată a licențelor Android SDK pentru a evita eroarea "License not accepted"
+        # 1. Acceptăm licențele
         mkdir -p $HOME/.android
         touch $HOME/.android/repositories.cfg
-        # Încercăm ambele locații posibile ale sdkmanager-ului pe runner-ul GitHub
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
         
-        # Pornim compilarea cu log_level=2 pentru vizibilitate maximă
+        # 2. INSTALARE MANUALĂ AIDL ȘI BUILD-TOOLS (Rezolvă eroarea ta)
+        # Instalăm platform-tools și build-tools versiunea 34 (cea mai stabilă pentru Buildozer)
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
+        
+        # 3. Configurăm calea pentru AIDL să fie vizibilă global
+        export PATH=$PATH:$ANDROID_HOME/build-tools/34.0.0
+        
+        # 4. Rulăm buildozer
         buildozer --log_level=2 android debug
 
     - name: Upload APK artifact
