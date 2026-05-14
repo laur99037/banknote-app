@@ -6,31 +6,27 @@ source.dir = .
 source.include_exts = py,png,jpg,tflite,kv
 version = 1.0
 
-# REQUISITES - Am adăugat pillow pentru redimensionare și tflite-runtime pentru YOLO
+# REQUIREMENTS: Am adăugat pachetele esențiale. 
+# Dacă tflite-runtime continuă să dea eroare, se poate folosi versiunea specifică de mai jos.
 requirements = python3,kivy==2.3.0,numpy,pillow,tflite-runtime
 
-# PERMISIUNI - Esențiale pentru cameră
-android.permissions = CAMERA, INTERNET
+android.permissions = CAMERA, INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
 
 orientation = portrait
 fullscreen = 1
 
-# --- SETĂRI PENTRU GITHUB ACTIONS (FOARTE IMPORTANTE) ---
-# Specificăm versiunile pentru a evita eroarea cu AIDL
+# SETĂRI SDK/NDK STABILE
 android.api = 34
 android.minapi = 21
 android.ndk = 26b
 android.sdk = 34
 android.accept_sdk_license = True
-
-# Aceasta forțează Buildozer să nu mai caute versiuni ciudate de build-tools
 android.sdk_build_tools_version = 34.0.0
+android.archs = arm64-v8a
 
-# Arhitecturi suportate (ARM64 este standard pentru telefoanele noi)
-android.archs = arm64-v8a, armeabi-v7a
-
-# Permite utilizarea fișierului tflite (fără compresie)
+# Această opțiune previne compresia modelului .tflite, esențial pentru ca interpretorul să-l poată citi direct din APK
 android.no_inplace_gradle_build = True
+android.copy_libs = 1
 
 [buildozer]
 log_level = 2
