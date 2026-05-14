@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
+      # Forțează utilizarea Node.js 24 pentru a elimina avertismentele de depreciere
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -19,7 +20,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.10' # Puse între ghilimele pentru a asigura interpretarea corectă a versiunii
 
     - name: Install system dependencies
       run: |
@@ -46,12 +47,15 @@ jobs:
           buildozer init
         fi
 
-   - name: Build APK
+    - name: Build APK
       run: |
+        # Pas CRITIC: Acceptarea automată a licențelor Android SDK pentru a evita eroarea "License not accepted"
         mkdir -p $HOME/.android
         touch $HOME/.android/repositories.cfg
+        # Încercăm ambele locații posibile ale sdkmanager-ului pe runner-ul GitHub
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
         
+        # Pornim compilarea cu log_level=2 pentru vizibilitate maximă
         buildozer --log_level=2 android debug
 
     - name: Upload APK artifact
