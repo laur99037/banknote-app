@@ -1,5 +1,6 @@
 import numpy as np
-import tensorflow as tf
+# Modificat aici: importăm tflite_runtime în loc de tot TensorFlow-ul
+import tflite_runtime.interpreter as tflite
 
 from kivy.app import App
 from kivy.clock import Clock
@@ -15,7 +16,8 @@ class BanknoteApp(App):
     def build(self):
         self.img = Image()
 
-        self.interpreter = tf.lite.Interpreter(model_path="best_float32.tflite")
+        # Modificat aici: apelăm direct din tflite
+        self.interpreter = tflite.Interpreter(model_path="best_float32.tflite")
         self.interpreter.allocate_tensors()
 
         self.detector = YOLOEngine(self.interpreter)
@@ -27,6 +29,10 @@ class BanknoteApp(App):
         return self.img
 
     def update(self, dt):
+        # Un mic ecran de siguranță: dacă textura camerei nu s-a încărcat încă, să nu dea crash aplicatia
+        if not self.camera.texture:
+            return
+
         frame = np.frombuffer(self.camera.texture.pixels, dtype=np.uint8)
         frame = frame.reshape(self.camera.texture.height,
                               self.camera.texture.width, 4)
