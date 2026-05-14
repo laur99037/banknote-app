@@ -43,10 +43,10 @@ jobs:
           buildozer init
         fi
 
-    - name: Build APK
+- name: Build APK
       run: |
-        # Folosim 'yes |' pentru a accepta automat licențele Android SDK pe care Buildozer le va descărca
-        yes | buildozer -v android debug
+        # Am scos "yes |" și am adăugat --log_level=2 ca să vedem exact eroarea în consolă
+        buildozer --log_level=2 android debug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
