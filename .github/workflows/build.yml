@@ -8,48 +8,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install system dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            git zip unzip openjdk-17-jdk \
-            autoconf libtool pkg-config \
-            zlib1g-dev libncurses5-dev \
-            libncursesw5-dev libtinfo6 \
-            cmake build-essential \
-            libssl-dev libffi-dev \
-            libsqlite3-dev ccache
-
-      - name: Install Python packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install cython==0.29.36
-          pip install buildozer
-
-      # FIX: cache pentru SDK/NDK - evită timeout-ul
-      - name: Cache Buildozer
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.buildozer
-            ~/.gradle
-          key: buildozer-${{ hashFiles('buildozer.spec') }}
-
       - name: Build APK
         run: |
           buildozer android debug 2>&1 | tee build.log
 
-      # FIX: upload și log-ul în caz de eroare
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
@@ -62,3 +31,4 @@ jobs:
         with:
           name: BanknoteAI-Debug
           path: bin/*.apk
+          if-no-files-found: warn
