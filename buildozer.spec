@@ -5,10 +5,7 @@ package.domain = org.ai
 source.dir = .
 source.include_exts = py,png,jpg,kv,tflite
 version = 1.0
-
-# FIX: numpy fara versiune fixata - p4a va folosi recipe-ul sau intern
 requirements = python3,kivy==2.3.0,numpy,pillow
-
 orientation = portrait
 fullscreen = 1
 android.permissions = CAMERA,INTERNET
@@ -17,6 +14,7 @@ android.minapi = 24
 android.ndk = 25b
 android.accept_sdk_license = True
 android.archs = arm64-v8a
+p4a.local_recipes = ./recipes
 
 [buildozer]
 log_level = 2
