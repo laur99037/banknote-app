@@ -6,8 +6,8 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,tflite
 version = 1.0
 
-# FIX: numpy fixat la versiune compatibila cu Android NDK
-requirements = python3,kivy==2.3.0,numpy==1.26.4,pillow
+# FIX: numpy fara versiune fixata - p4a va folosi recipe-ul sau intern
+requirements = python3,kivy==2.3.0,numpy,pillow
 
 orientation = portrait
 fullscreen = 1
