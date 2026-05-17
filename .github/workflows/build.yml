@@ -35,6 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install cython==0.29.36
           pip install buildozer
+          pip install python-for-android==2024.1.21
 
       - name: Cache Buildozer
         uses: actions/cache@v3
