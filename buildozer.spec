@@ -5,7 +5,7 @@ package.domain = org.ai
 source.dir = .
 source.include_exts = py,png,jpg,kv,tflite
 version = 1.0
-requirements = python3,kivy==2.3.0,numpy,pillow
+requirements = python3==3.10.14,kivy==2.3.0,numpy,pillow
 orientation = portrait
 fullscreen = 1
 android.permissions = CAMERA,INTERNET
